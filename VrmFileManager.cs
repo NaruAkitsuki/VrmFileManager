@@ -11,8 +11,7 @@ public class VrmFileManager : MonoBehaviour
 
     private void Awake()
     {
-        loadedAnimatorController = Resources.Load<RuntimeAnimatorController>(Constants.CharacterAnimatorFilePath);
-        Debug.Log(loadedAnimatorController);
+        loadedAnimatorController = Resources.Load<RuntimeAnimatorController>("ファイルパス");
     }
 
     public async Task ImportVrmAsync(string fullPath, Transform parent)
@@ -26,19 +25,23 @@ public class VrmFileManager : MonoBehaviour
         root.transform.SetParent(parent, false);
         root.transform.localPosition = new Vector3(0, 1f, 0);
 
+        // 先にRigidbodyつける
         var rb = root.AddComponent<Rigidbody>();
         rb.freezeRotation = true;
         
+        // コライダつける
         var capsuleCollider = root.AddComponent<CapsuleCollider>();
         capsuleCollider.center = new Vector3(0, 0.7f, 0);
         capsuleCollider.radius = 0.2f;
         capsuleCollider.height = 1.5f;
 
+        //  アニメーションできるように、Animatorつける
         var rootAnimator = root.GetComponent<Animator>();
         rootAnimator.runtimeAnimatorController = loadedAnimatorController;
 
-        context.ShowMeshes();
-
+        // Playerとして扱うならタグつける
         root.tag = TagName.Player;
+        
+        context.ShowMeshes();
     }
 }
